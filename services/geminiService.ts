@@ -1,10 +1,9 @@
 
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
+
 import { DailyLog, ChatMessage } from "../types";
 import { RED_FLAG_KEYWORDS } from "../constants";
 
 // 初始化：直接使用 process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const MEDICAL_KNOWLEDGE_BASE: Record<string, any> = {
   "胃胀": {
