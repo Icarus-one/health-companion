@@ -1,8 +1,8 @@
-export const onRequestPost: PagesFunction = async (context) => {
+export const onRequestPost: PagesFunction = async (ctx) => {
   try {
-    const { prompt, systemInstruction, temperature, model } = await context.request.json();
+    const { prompt, systemInstruction, temperature, model } = await ctx.request.json();
 
-    const apiKey = context.env.GEMINI_API_KEY as string | undefined;
+    const apiKey = ctx.env.GEMINI_API_KEY as string | undefined;
     if (!apiKey) {
       return new Response(JSON.stringify({ error: "Missing GEMINI_API_KEY" }), {
         status: 500,
@@ -10,39 +10,36 @@ export const onRequestPost: PagesFunction = async (context) => {
       });
     }
 
-    if (!prompt || typeof prompt !== "string") {
-      return new Response(JSON.stringify({ error: "Missing prompt" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const m = model || "gemini-1.5-flash";
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`,
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model || "gemini-1.5-flash"}:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system_instruction: systemInstruction
-            ? { parts: [{ text: systemInstruction }] }
-            : undefined,
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: typeof temperature === "number" ? temperature : 0.7,
-          },
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
+          generationConfig: { temperature: temperature ?? 0.7 },
         }),
       }
     );
 
-    const data = await resp.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const data = await r.json();
+    if (!r.ok) {
+      return new Response(JSON.stringify({ error: data?.error?.message || "Gemini API error" }), {
+        status: r.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const text =
+      data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ||
+      "（无返回文本）";
 
     return new Response(JSON.stringify({ text }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || String(e) }), {
+    return new Response(JSON.stringify({ error: e?.message || "Server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
