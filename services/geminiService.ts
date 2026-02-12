@@ -80,7 +80,7 @@ ${recentLogs}
 
 export const generateWeeklyReport = async (logs: DailyLog[]): Promise<string> => {
   if (logs.length < 3) return "记录数据不足。";
-  
+
   const dataString = logs.slice(-15).map(log => {
     const d = new Date(log.date);
     const timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
@@ -94,36 +94,29 @@ export const generateWeeklyReport = async (logs: DailyLog[]): Promise<string> =>
 ${dataString}
 
 核心分析任务：
-1. **时序分布表**：总结【记录密度 | 关键波动时段 | 核心症状出现时刻 | 指标均值】。
-2. **时空规律挖掘**：
-   - 是否存在特定时段（如每天下午）精力明显下降？
-   - 记录频率的变化是否反映了用户的情绪或身体敏感度？
-   - 症状出现的时间与睡眠分数是否有滞后相关性？
-3. **因果与干预**：运用中西医理论解释。建议必须包含“微干预”（针对特定时间的行动）。
-
-直接输出报告内容，禁止使用代码块包裹。
+1. 总结关键波动时段
+2. 分析症状与睡眠、精力的关系
+3. 给出中西医结合干预建议
 `;
 
   try {
-   const r = await fetch("/api/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    prompt,
-    systemInstruction: SYSTEM_INSTRUCTION,
-    temperature: 0.7,
-    model: "gemini-1.5-flash",
-  }),
-});
-
-const data = await r.json();
-if (!r.ok) throw new Error(data?.error || "API error");
-return { text: data?.text || "理解中..." };
-
-      },
+    const r = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt,
+        systemInstruction: SYSTEM_INSTRUCTION,
+        temperature: 0.8,
+        model: "gemini-1.5-flash",
+      }),
     });
-    return response.text || "报告生成失败。";
+
+    const data = await r.json();
+    if (!r.ok) throw new Error(data?.error || "API error");
+
+    return data?.text || "报告生成失败。";
   } catch (e) {
     return "分析过程中出现错误。";
   }
 };
+
