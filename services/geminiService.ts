@@ -96,7 +96,7 @@ ${dataString}
         model: "gemini-1.5-flash"
       })
     });
-
+// deploy ping
     const data = await r.json();
     return data?.text || "报告生成失败。";
 
