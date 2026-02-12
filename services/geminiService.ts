@@ -105,12 +105,21 @@ ${dataString}
 `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.8
+   const r = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    prompt,
+    systemInstruction: SYSTEM_INSTRUCTION,
+    temperature: 0.7,
+    model: "gemini-1.5-flash",
+  }),
+});
+
+const data = await r.json();
+if (!r.ok) throw new Error(data?.error || "API error");
+return { text: data?.text || "理解中..." };
+
       },
     });
     return response.text || "报告生成失败。";
