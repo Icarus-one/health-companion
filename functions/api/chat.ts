@@ -1,42 +1,67 @@
 export async function onRequestPost(context: any) {
   try {
-    const { prompt, systemInstruction, temperature, model } = await context.request.json();
+    const { prompt, systemInstruction, temperature, model } =
+      await context.request.json();
 
-    const apiKey = context.env.GEMINI_API_KEY; // ✅ Pages Functions 用 runtime env
+    const apiKey = context.env.GEMINI_API_KEY;
+
     if (!apiKey) {
-      return new Response(JSON.stringify({ text: "GEMINI_API_KEY 未配置" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ text: "服务器未配置 GEMINI_API_KEY" }),
+        { status: 500 }
+      );
     }
 
-    const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model || "gemini-1.5-flash"}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: `${systemInstruction || ""}\n\n${prompt || ""}` }],
-            },
-          ],
-          generationConfig: { temperature: temperature ?? 0.7 },
-        }),
-      }
-    );
+    const url =
+      `https://generativelanguage.googleapis.com/v1beta/models/${model || "gemini-1.5-flash"}:generateContent?key=${apiKey}`;
 
-    const data = await resp.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "AI 无返回";
+    const body = {
+      system_instruction: {
+        parts: [{ text: systemInstruction || "你是健康分析助手。" }]
+      },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }]
+        }
+      ],
+      generationConfig: {
+        temperature: temperature ?? 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024
+      }
+    };
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const raw = await resp.text();
+    console.log("Gemini raw:", raw);
+
+    if (!resp.ok) {
+      return new Response(
+        JSON.stringify({ text: "Gemini API 请求失败" }),
+        { status: 500 }
+      );
+    }
+
+    const data = JSON.parse(raw);
+
+    const text =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "模型没有返回内容";
 
     return new Response(JSON.stringify({ text }), {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ text: "API 错误: " + e.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ text: "Worker 内部错误: " + e.message }),
+      { status: 500 }
+    );
   }
 }
