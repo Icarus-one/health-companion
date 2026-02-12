@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Health Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f8fafc;
+      }
+      
+      /* 仪表盘专用：深色背景 Markdown 样式 */
+      .prose-custom {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+      }
+      .prose-custom h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin: 1.5rem 0 0.75rem 0;
+        color: #fff;
+        display: flex;
+        align-items: center;
+      }
+      .prose-custom h3::before {
+        content: "";
+        width: 4px;
+        height: 16px;
+        background: #fff;
+        margin-right: 8px;
+        border-radius: 2px;
+        display: inline-block;
+      }
+      .prose-custom table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 1rem 0;
+        font-size: 0.8rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .prose-custom th {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 700;
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .prose-custom td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* 助手对话专用：浅色背景 Markdown 样式 */
+      .prose-chat {
+        color: #334155;
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+      .prose-chat h1, .prose-chat h2, .prose-chat h3 {
+        color: #1e293b;
+        font-weight: 700;
+        margin: 1.25em 0 0.5em;
+      }
+      .prose-chat p { margin-bottom: 0.75em; }
+      .prose-chat strong { color: #4338ca; font-weight: 700; }
+      
+      /* 聊天表格样式重写：解决排版混乱 */
+      .prose-chat table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        background-color: #fcfcfd;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+      .prose-chat th {
+        background-color: #f8fafc;
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+      }
+      .prose-chat td {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+        color: #475569;
+        border-bottom: 1px solid #f1f5f9;
+        line-height: 1.4;
+      }
+      .prose-chat tr:last-child td { border-bottom: none; }
+      .prose-chat tr:hover td { background-color: #f1f5f9; }
+
+      /* 列表样式 */
+      .prose-chat ul, .prose-chat ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+      .prose-chat li { margin-bottom: 0.25rem; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "recharts": "https://esm.sh/recharts@2.15.0?external=react,react-dom",
+    "react-markdown": "https://esm.sh/react-markdown@9.0.1?external=react,react-dom",
+    "remark-gfm": "https://esm.sh/remark-gfm@4.0.0",
+    "@google/genai": "https://esm.sh/@google/genai@1.40.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

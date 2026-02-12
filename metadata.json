@@ -1,0 +1,5 @@
+{
+  "name": "Personal Health Companion (V1)",
+  "description": "A long-term health advisor focusing on longitudinal body data, recording daily metrics to provide context-aware insights and personalized micro-interventions.",
+  "requestFramePermissions": []
+}
