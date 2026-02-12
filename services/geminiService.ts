@@ -79,44 +79,8 @@ ${recentLogs}
 };
 
 export const generateWeeklyReport = async (logs: DailyLog[]): Promise<string> => {
-  if (logs.length < 3) return "记录数据不足。";
-
-  const dataString = logs.slice(-15).map(log => {
-    const d = new Date(log.date);
-    const timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
-    return `[${timeStr}] 睡眠:${log.sleepQuality}, 精力:${log.energyLevel}, 情绪:${log.moodStatus}, 肠胃:${log.gastroStatus}${log.symptoms ? `, 观察: "${log.symptoms}"` : ''}`;
-  }).join('\n');
-
-  const prompt = `
-作为健康分析官，请基于以下【非定点时序数据】生成深度洞察报告。
-
-记录列表：
-${dataString}
-
-核心分析任务：
-1. 总结关键波动时段
-2. 分析症状与睡眠、精力的关系
-3. 给出中西医结合干预建议
-`;
-
-  try {
-    const r = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt,
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.8,
-        model: "gemini-1.5-flash",
-      }),
-    });
-
-    const data = await r.json();
-    if (!r.ok) throw new Error(data?.error || "API error");
-
-    return data?.text || "报告生成失败。";
-  } catch (e) {
-    return "分析过程中出现错误。";
-  }
+  // ✅ 先保证能构建上线；周报功能后面再完善
+  return "周报功能正在接入中…";
 };
+
 
